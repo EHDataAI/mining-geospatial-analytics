@@ -63,6 +63,49 @@ A spatial operation requires geometries to use a compatible spatial reference sy
 
 ---
 
+### LAB 02 - Spatial Exploratory Data Analysis
+
+[Open the recruiter-facing notebook](labs/lab02_spatial_eda/02_spatial_eda.ipynb)
+
+**Problem:** an apparent spatial hotspot can reflect uneven sampling intensity rather than a strong underlying spatial signal.
+
+The walkthrough demonstrates:
+
+- synthetic spatial sampling with regional and campaign components
+- projected analysis in WGS 84 / UTM Zone 19S (`EPSG:32719`)
+- nearest-neighbour sampling-density diagnostics
+- regular-grid aggregation
+- separation of sampling density from underlying synthetic signal
+- grid-resolution sensitivity using persisted Monte Carlo results
+- geographic context with documented Natural Earth provenance
+- reusable spatial utilities
+- automated tests
+
+Key numerical evidence:
+
+| Metric | Result |
+| --- | ---: |
+| Observations | 800 |
+| Regional mean NN distance | 1807.35 m |
+| Campaign mean NN distance | 502.73 m |
+| Campaign / regional NN ratio | 0.278 |
+| Primary descriptive grid | 10 km |
+| Densest cell | `c2_r3` |
+| Highest observed-signal cell | `c6_r6` |
+| Highest true-signal cell | `c6_r6` |
+
+The densest cell differs from both signal hotspots, while the highest observed-signal cell agrees with the highest true-signal cell in this synthetic realization.
+
+The 10 km grid is used only as the primary descriptive resolution for this experiment. It is not presented as a universal optimum.
+
+**Core lesson:**
+
+```text
+sampling density is not underlying spatial signal
+```
+
+---
+
 ## Why this matters for GeoAI
 
 Spatial errors can silently propagate into features such as:
@@ -102,14 +145,16 @@ technical interpretation
 
 The current public portfolio includes:
 
-- 2 recruiter-facing geospatial notebooks
-- reusable CRS utilities under `src/geoai/`
+- 3 recruiter-facing geospatial notebooks
+- reusable CRS and spatial-analysis utilities under `src/geoai/`
 - automated pytest validation
-- 15 passing CRS-related tests
+- 24 passing automated tests
+- persisted synthetic Monte Carlo result artifacts for LAB 02
+- documented provenance for the LAB 02 geographic context layer
 - reproducible Conda environment definition
 - pre-commit quality controls
 - Gitleaks secret scanning
-- synthetic and redistribution-safe examples
+- synthetic and redistribution-safe analytical examples
 
 ## Repository structure
 
@@ -117,19 +162,34 @@ The current public portfolio includes:
 geoai-mineral-portfolio/
 |
 |-- labs/
-|   `-- lab01_geospatial_foundations/
-|       |-- 01a_coordinate_foundations.ipynb
-|       |-- 01b_cross_zone_crs.ipynb
-|       `-- README.md
+|   |-- lab01_geospatial_foundations/
+|   |   |-- 01a_coordinate_foundations.ipynb
+|   |   |-- 01b_cross_zone_crs.ipynb
+|   |   `-- README.md
+|   |
+|   `-- lab02_spatial_eda/
+|       |-- 02_spatial_eda.ipynb
+|       |-- 02_spatial_eda.py
+|       |-- README.md
+|       |-- data/
+|       |   `-- context/
+|       |       |-- chile_context.geojson
+|       |       `-- SOURCE.md
+|       `-- results/
+|           |-- experiment_metadata.json
+|           |-- monte_carlo_by_realization.csv
+|           `-- resolution_summary.csv
 |
 |-- src/
 |   `-- geoai/
 |       |-- __init__.py
-|       `-- crs.py
+|       |-- crs.py
+|       `-- spatial.py
 |
 |-- tests/
 |   |-- test_crs.py
-|   `-- test_cross_zone_crs.py
+|   |-- test_cross_zone_crs.py
+|   `-- test_spatial.py
 |
 |-- environment.yml
 |-- pyproject.toml
@@ -202,10 +262,10 @@ python -m pytest -q
 Current validated result:
 
 ```text
-15 passed
+24 passed
 ```
 
-The reusable CRS logic is tested independently from the explanatory notebooks.
+Reusable CRS and spatial-analysis logic is tested independently from the explanatory notebooks.
 
 ## Data strategy
 
@@ -218,14 +278,16 @@ This approach keeps the experiments:
 - independent of proprietary exploration datasets
 - focused on the spatial concept being demonstrated
 
+LAB 02 additionally uses a Natural Earth country boundary only for geographic context. Its source, version, license status, and integrity hashes are documented alongside the local context file. The analytical experiment itself remains entirely synthetic.
+
 Future external datasets will require explicit review of source, license, attribution, CRS, resolution, redistribution rights, and known limitations.
 
 ## Current roadmap
 
 | Lab | Topic | Status |
 | --- | --- | --- |
-| LAB 01 | Geospatial Python Foundations | In progress |
-| LAB 02 | Spatial Exploratory Data Analysis | Planned |
+| LAB 01 | Geospatial Python Foundations | Complete |
+| LAB 02 | Spatial Exploratory Data Analysis | Complete |
 | LAB 03 | Spatial Cross-Validation | Planned |
 | LAB 04 | Geochemical CoDA | Planned |
 | LAB 05 | Mineral Prospectivity Mapping | Planned |
@@ -235,9 +297,9 @@ Future external datasets will require explicit review of source, license, attrib
 | LAB 09 | Deep Learning for GeoAI | Planned |
 | LAB 10 | Graph & Multimodal GeoAI | Planned |
 
-LAB 01A and LAB 01B are completed and validated.
+LAB 01 and LAB 02 are completed and validated.
 
-Additional LAB 01 work will progressively cover geometry validation, spatial operations, raster foundations, and raster/vector integration.
+LAB 03 will extend the portfolio from exploratory spatial reasoning into spatial cross-validation, with explicit attention to spatial leakage and the limitations of conventional random train/test splits.
 
 ## Technical principles
 
