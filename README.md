@@ -1,6 +1,6 @@
-# GeoAI Mineral Portfolio
+# Mining Geospatial Analytics
 
-Applied geospatial data science and GeoAI portfolio focused on mineral exploration.
+Applied geospatial data science, spatial machine learning, and reproducible analytics for mineral exploration and mining.
 
 This repository presents reproducible technical walkthroughs that connect geospatial reasoning, scientific validation, reusable Python code, automated testing, and clear technical communication.
 
@@ -159,7 +159,7 @@ The current public portfolio includes:
 ## Repository structure
 
 ```text
-geoai-mineral-portfolio/
+mining-geospatial-analytics/
 |
 |-- labs/
 |   |-- lab01_geospatial_foundations/
@@ -234,7 +234,7 @@ Create it with:
 
 ```bash
 conda env create -f environment.yml
-conda activate geoai-mineral-portfolio
+conda activate mining-geospatial-analytics
 ```
 
 The current geospatial stack includes:

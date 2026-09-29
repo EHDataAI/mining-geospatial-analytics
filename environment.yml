@@ -1,4 +1,4 @@
-name: geoai-mineral-portfolio
+name: mining-geospatial-analytics
 
 channels:
   - conda-forge

@@ -371,7 +371,7 @@ environment.yml
 The public portfolio uses the dedicated Conda environment:
 
 ```text
-geoai-mineral-portfolio
+mining-geospatial-analytics
 ```
 
 Project-level dependencies are controlled through:

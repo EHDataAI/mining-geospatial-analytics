@@ -24,7 +24,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v4
         with:
           environment-file: environment.yml
-          activate-environment: geoai-mineral-portfolio
+          activate-environment: mining-geospatial-analytics
           auto-activate-base: false
 
       - name: Show environment information
