@@ -1,11 +1,12 @@
 # ============================================================
-# GEOAI MINERAL LABS
+# MINING GEOSPATIAL ANALYTICS
 # Cross-platform Git attributes
 # ============================================================
 
 # Normalize text files in the repository
 * text=auto
 .gitattributes text eol=lf
+.gitignore text eol=lf
 
 # Source code
 *.py      text eol=lf

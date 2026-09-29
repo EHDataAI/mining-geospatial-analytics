@@ -3,9 +3,9 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "geoai-mineral-portfolio"
+name = "mining-geospatial-analytics"
 version = "0.1.0"
-description = "Applied geospatial data science and GeoAI portfolio for mineral exploration."
+description = "Applied geospatial data science, spatial machine learning, and reproducible analytics for mineral exploration and mining."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = []
