@@ -106,6 +106,34 @@ sampling density is not underlying spatial signal
 
 ---
 
+### LAB 03 - Spatial Cross-Validation
+
+[Open the recruiter-facing notebook](labs/lab03_spatial_cross_validation/03_spatial_cross_validation.ipynb)
+
+**Problem:** conventional random cross-validation can produce optimistic performance estimates when spatially close observations are distributed between training and validation sets.
+
+The walkthrough demonstrates:
+
+- Random K-Fold versus Spatial Block Cross-Validation;
+- a fixed local KNN baseline so that validation design, rather than model selection, is the experimental variable;
+- 5 km spatial blocks as the primary validation scenario;
+- 10 km sensitivity analysis;
+- 20 km stress testing;
+- train-validation spatial-separation diagnostics;
+- spatial-group overlap diagnostics;
+- RMSE and MAE as primary performance metrics;
+- limitations of R² when validation folds contain very low target variance.
+
+For the primary 5 km scenario:
+
+- Random pooled RMSE: **3.9676**;
+- Spatial Block CV pooled RMSE: **4.2610**;
+- relative RMSE optimism: **6.89%**;
+- Random median test-to-train separation: **1.11 km**;
+- Spatial median test-to-train separation: **2.39 km**;
+- mean 5 km spatial-group overlap: **73.6** for Random K-Fold versus **0.0** for Spatial Block CV.
+
+The result is experiment-specific and is not presented as a universal correction factor or as evidence that one spatial block size is optimal for other datasets.
 ## Why this matters for GeoAI
 
 Spatial errors can silently propagate into features such as:
@@ -180,7 +208,21 @@ mining-geospatial-analytics/
 |           |-- monte_carlo_by_realization.csv
 |           `-- resolution_summary.csv
 |
-|-- src/
+|   |
+|   `-- lab03_spatial_cross_validation/
+|       |-- 03_spatial_cross_validation.ipynb
+|       |-- 03a_run_spatial_cv_experiment.py
+|       |-- 03b_summarize_cv_results.py
+|       |-- README.md
+|       `-- results/
+|           |-- aggregate_comparison.csv
+|           |-- aggregate_metrics.csv
+|           |-- experiment_metadata.json
+|           |-- fold_results.csv
+|           |-- scenario_diagnostics.csv
+|           |-- strategy_summary.csv
+|           `-- validation_comparison.csv
+||-- src/
 |   `-- geoai/
 |       |-- __init__.py
 |       |-- crs.py
@@ -288,7 +330,7 @@ Future external datasets will require explicit review of source, license, attrib
 | --- | --- | --- |
 | LAB 01 | Geospatial Python Foundations | Complete |
 | LAB 02 | Spatial Exploratory Data Analysis | Complete |
-| LAB 03 | Spatial Cross-Validation | Planned |
+| LAB 03 | Spatial Cross-Validation | Complete |
 | LAB 04 | Geochemical CoDA | Planned |
 | LAB 05 | Mineral Prospectivity Mapping | Planned |
 | LAB 06 | Explainable GeoAI | Planned |
@@ -297,9 +339,11 @@ Future external datasets will require explicit review of source, license, attrib
 | LAB 09 | Deep Learning for GeoAI | Planned |
 | LAB 10 | Graph & Multimodal GeoAI | Planned |
 
-LAB 01 and LAB 02 are completed and validated.
+LAB 01, LAB 02, and LAB 03 are completed and validated.
 
-LAB 03 will extend the portfolio from exploratory spatial reasoning into spatial cross-validation, with explicit attention to spatial leakage and the limitations of conventional random train/test splits.
+LAB 03 extends the portfolio from exploratory spatial reasoning into spatial cross-validation, with explicit attention to spatial leakage, train-validation separation, spatial-group overlap, and the limitations of conventional random cross-validation.
+
+LAB 04 will move into geochemical compositional data analysis while preserving the same emphasis on reproducibility, explicit assumptions, and spatially appropriate validation.
 
 ## Technical principles
 

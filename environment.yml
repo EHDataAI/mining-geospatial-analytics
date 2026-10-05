@@ -13,6 +13,10 @@ dependencies:
   - numpy=2.5.*
   - pandas=3.0.*
 
+  # Machine learning and statistical validation
+  - scipy=1.18.*
+  - scikit-learn=1.9.*
+
   # Geospatial vector stack
   - geopandas-base=1.1.*
   - shapely=2.1.*
