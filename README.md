@@ -1,10 +1,10 @@
 # Mining Geospatial Analytics
 
-Applied geospatial data science, spatial machine learning, and reproducible analytics for mineral exploration and mining.
+Applied geospatial data science, spatial machine learning, geochemical compositional analysis, and reproducible analytics for mineral exploration and mining.
 
 This repository presents reproducible technical walkthroughs that connect geospatial reasoning, scientific validation, reusable Python code, automated testing, and clear technical communication.
 
-The portfolio is developed incrementally. Each public laboratory is intended to demonstrate not only that code runs, but that the underlying spatial analysis is scientifically meaningful, reproducible, and testable.
+The portfolio is developed incrementally. Each public laboratory is intended to demonstrate not only that code runs, but that the underlying analysis is scientifically meaningful, reproducible, and testable.
 
 ## Featured work
 
@@ -114,53 +114,128 @@ sampling density is not underlying spatial signal
 
 The walkthrough demonstrates:
 
-- Random K-Fold versus Spatial Block Cross-Validation;
-- a fixed local KNN baseline so that validation design, rather than model selection, is the experimental variable;
-- 5 km spatial blocks as the primary validation scenario;
-- 10 km sensitivity analysis;
-- 20 km stress testing;
-- train-validation spatial-separation diagnostics;
-- spatial-group overlap diagnostics;
-- RMSE and MAE as primary performance metrics;
-- limitations of R² when validation folds contain very low target variance.
+- Random K-Fold versus Spatial Block Cross-Validation
+- a fixed local KNN baseline so that validation design, rather than model selection, is the experimental variable
+- 5 km spatial blocks as the primary validation scenario
+- 10 km sensitivity analysis
+- 20 km stress testing
+- train-validation spatial-separation diagnostics
+- spatial-group overlap diagnostics
+- RMSE and MAE as primary performance metrics
+- limitations of R² when validation folds contain very low target variance
 
 For the primary 5 km scenario:
 
-- Random pooled RMSE: **3.9676**;
-- Spatial Block CV pooled RMSE: **4.2610**;
-- relative RMSE optimism: **6.89%**;
-- Random median test-to-train separation: **1.11 km**;
-- Spatial median test-to-train separation: **2.39 km**;
-- mean 5 km spatial-group overlap: **73.6** for Random K-Fold versus **0.0** for Spatial Block CV.
+- Random pooled RMSE: **3.9676**
+- Spatial Block CV pooled RMSE: **4.2610**
+- relative RMSE optimism: **6.89%**
+- Random median test-to-train separation: **1.11 km**
+- Spatial median test-to-train separation: **2.39 km**
+- mean 5 km spatial-group overlap: **73.6** for Random K-Fold versus **0.0** for Spatial Block CV
 
 The result is experiment-specific and is not presented as a universal correction factor or as evidence that one spatial block size is optimal for other datasets.
+
+**Core lesson:**
+
+```text
+validation geometry changes the prediction problem being evaluated
+```
+
+---
+
+### LAB 04 - Geochemical Compositional Data Analysis
+
+[Open the recruiter-facing notebook](labs/lab04_geochemical_coda/04_geochemical_coda.ipynb)
+
+**Problem:** multivariate geochemical concentrations can be misinterpreted when relative compositional structure is ignored and conventional Euclidean analysis is applied without considering closure and log-ratio geometry.
+
+The walkthrough demonstrates:
+
+- deterministic synthetic geochemical data generation
+- ten-element geochemical subcomposition
+- explicit detection-limit and missing-value semantics
+- constant-sum closure
+- centered log-ratio transformation
+- isometric log-ratio transformation
+- Aitchison distance
+- raw, closed, CLR, and ILR PCA comparison
+- numerical equivalence of non-zero CLR and ILR PCA eigenvalues
+- detection-limit replacement sensitivity
+- explicit geochemical data contracts
+- automated notebook and analytical validation
+
+The controlled dataset contains:
+
+- **1,200** synthetic samples
+- **10** selected elements
+- WGS 84 / UTM Zone 19S (`EPSG:32719`)
+- **1,169** synthetically censored cells
+- **111** missing elemental observations
+- **1,092** complete samples used in the primary multivariate analysis
+
+For `D = 10` compositional variables:
+
+```text
+CLR dimension = 10
+CLR rank = 9
+ILR dimension = 9
+```
+
+The non-zero eigenvalues from CLR and ILR PCA agree numerically, providing an internal validation of the compositional geometry implementation.
+
+Detection-limit sensitivity between `LOD / 2` and `LOD / sqrt(2)` produced:
+
+| Component | Score correlation |
+| --- | ---: |
+| PC1 | 0.983686 |
+| PC2 | 0.981298 |
+| PC3 | 0.954433 |
+
+The absolute change in PC1 explained variance was approximately `0.020898`.
+
+This indicates substantial structural agreement without implying complete invariance to the censoring treatment.
+
+The selected ten elements are explicitly treated as a **subcomposition**. Closure to 100 is a relative normalization step and must not be interpreted as complete whole-rock mass balance.
+
+**Core lesson:**
+
+```text
+geochemical composition requires relative, not purely absolute, geometry
+```
+
 ## Why this matters for GeoAI
 
-Spatial errors can silently propagate into features such as:
+Spatial and geochemical errors can silently propagate into downstream predictive features such as:
 
 ```text
 distance_to_fault_m
 distance_to_intrusive_m
 distance_to_contact_m
-distance_to_occurrence_m
 nearest_anomaly_distance_m
 neighbourhood_density
+clr_Cu
+clr_Mo
+clr_Au
+ilr_1
+ilr_2
 ```
 
-A machine-learning model may train successfully even when these input features are spatially incorrect.
+A machine-learning model may train successfully even when its spatial validation is optimistic or its geochemical representation is methodologically inappropriate.
 
-For this reason, the portfolio treats spatial validation as a prerequisite for predictive modelling.
-
-The current workflow follows:
+For this reason, the portfolio builds predictive modelling only after establishing:
 
 ```text
 problem
  ->
 spatial reasoning
  ->
+data semantics
+ ->
 reproducible analysis
  ->
 independent validation
+ ->
+compositional reasoning
  ->
 reusable implementation
  ->
@@ -173,12 +248,15 @@ technical interpretation
 
 The current public portfolio includes:
 
-- 3 recruiter-facing geospatial notebooks
-- reusable CRS and spatial-analysis utilities under `src/geoai/`
+- 5 recruiter-facing analytical notebooks
+- reusable CRS, spatial-analysis, spatial-validation, and compositional-analysis utilities under `src/geoai/`
 - automated pytest validation
-- 24 passing automated tests
+- 58 passing automated tests
 - persisted synthetic Monte Carlo result artifacts for LAB 02
+- persisted spatial-validation results for LAB 03
+- persisted geochemical CoDA summaries and PCA artifacts for LAB 04
 - documented provenance for the LAB 02 geographic context layer
+- explicit geochemical data contracts for LAB 04
 - reproducible Conda environment definition
 - pre-commit quality controls
 - Gitleaks secret scanning
@@ -195,43 +273,74 @@ mining-geospatial-analytics/
 |   |   |-- 01b_cross_zone_crs.ipynb
 |   |   `-- README.md
 |   |
-|   `-- lab02_spatial_eda/
-|       |-- 02_spatial_eda.ipynb
-|       |-- 02_spatial_eda.py
+|   |-- lab02_spatial_eda/
+|   |   |-- 02_spatial_eda.ipynb
+|   |   |-- 02_spatial_eda.py
+|   |   |-- README.md
+|   |   |-- data/
+|   |   |   `-- context/
+|   |   |       |-- chile_context.geojson
+|   |   |       `-- SOURCE.md
+|   |   `-- results/
+|   |       |-- experiment_metadata.json
+|   |       |-- monte_carlo_by_realization.csv
+|   |       `-- resolution_summary.csv
+|   |
+|   |-- lab03_spatial_cross_validation/
+|   |   |-- 03_spatial_cross_validation.ipynb
+|   |   |-- 03a_run_spatial_cv_experiment.py
+|   |   |-- 03b_summarize_cv_results.py
+|   |   |-- README.md
+|   |   `-- results/
+|   |       |-- aggregate_comparison.csv
+|   |       |-- aggregate_metrics.csv
+|   |       |-- experiment_metadata.json
+|   |       |-- fold_results.csv
+|   |       |-- scenario_diagnostics.csv
+|   |       |-- strategy_summary.csv
+|   |       `-- validation_comparison.csv
+|   |
+|   `-- lab04_geochemical_coda/
+|       |-- 04_geochemical_coda.ipynb
+|       |-- 04a_generate_synthetic_geochemistry.py
+|       |-- 04b_run_coda_analysis.py
+|       |-- 04c_lod_sensitivity.py
+|       |-- 04d_audit_data_contract.py
+|       |-- geochemistry_config.py
+|       |-- geochemistry_contract.json
 |       |-- README.md
 |       |-- data/
-|       |   `-- context/
-|       |       |-- chile_context.geojson
-|       |       `-- SOURCE.md
+|       |   `-- synthetic_geochemistry.csv
 |       `-- results/
-|           |-- experiment_metadata.json
-|           |-- monte_carlo_by_realization.csv
-|           `-- resolution_summary.csv
+|           |-- analysis_summary.json
+|           |-- correlation_closed.csv
+|           |-- correlation_clr.csv
+|           |-- correlation_raw.csv
+|           |-- data_contract_audit.json
+|           |-- lod_sensitivity_summary.json
+|           |-- lod_sensitivity_variance.csv
+|           |-- pca_explained_variance.csv
+|           |-- pca_loadings_closed.csv
+|           |-- pca_loadings_clr.csv
+|           |-- pca_loadings_ilr.csv
+|           `-- pca_loadings_raw.csv
 |
-|   |
-|   `-- lab03_spatial_cross_validation/
-|       |-- 03_spatial_cross_validation.ipynb
-|       |-- 03a_run_spatial_cv_experiment.py
-|       |-- 03b_summarize_cv_results.py
-|       |-- README.md
-|       `-- results/
-|           |-- aggregate_comparison.csv
-|           |-- aggregate_metrics.csv
-|           |-- experiment_metadata.json
-|           |-- fold_results.csv
-|           |-- scenario_diagnostics.csv
-|           |-- strategy_summary.csv
-|           `-- validation_comparison.csv
-||-- src/
+|-- src/
 |   `-- geoai/
 |       |-- __init__.py
+|       |-- composition.py
 |       |-- crs.py
-|       `-- spatial.py
+|       |-- spatial.py
+|       `-- validation.py
 |
 |-- tests/
-|   |-- test_crs.py
+|   |-- test_composition.py
 |   |-- test_cross_zone_crs.py
-|   `-- test_spatial.py
+|   |-- test_crs.py
+|   |-- test_lab04_contract.py
+|   |-- test_lab04_notebook.py
+|   |-- test_spatial.py
+|   `-- test_validation.py
 |
 |-- environment.yml
 |-- pyproject.toml
@@ -247,7 +356,7 @@ The portfolio separates four complementary layers:
    Markdown + visual evidence
 
 2. DEMONSTRATE
-   executable notebooks and results
+   executable notebooks and persisted results
 
 3. ENGINEER
    reusable Python components
@@ -279,10 +388,12 @@ conda env create -f environment.yml
 conda activate mining-geospatial-analytics
 ```
 
-The current geospatial stack includes:
+The analytical stack currently includes:
 
 - NumPy
 - Pandas
+- SciPy
+- scikit-learn
 - GeoPandas
 - Shapely
 - PyProj
@@ -304,25 +415,38 @@ python -m pytest -q
 Current validated result:
 
 ```text
-24 passed
+58 passed
 ```
 
-Reusable CRS and spatial-analysis logic is tested independently from the explanatory notebooks.
+Reusable CRS, spatial-analysis, spatial-validation, and compositional-analysis logic is tested independently from the explanatory notebooks.
+
+The public LAB04 notebook additionally retains:
+
+```text
+24 code cells
+24 executed code cells
+24 outputs
+0 notebook error outputs
+```
 
 ## Data strategy
 
-The current walkthroughs use synthetic spatial examples.
+The current analytical experiments use synthetic data.
 
 This approach keeps the experiments:
 
 - reproducible
 - redistribution-safe
 - independent of proprietary exploration datasets
-- focused on the spatial concept being demonstrated
+- focused on the methodological concept being demonstrated
 
-LAB 02 additionally uses a Natural Earth country boundary only for geographic context. Its source, version, license status, and integrity hashes are documented alongside the local context file. The analytical experiment itself remains entirely synthetic.
+LAB 02 additionally uses a Natural Earth country boundary only for geographic context. Its source, version, license status, and integrity hashes are documented alongside the local context file. The analytical experiment itself remains synthetic.
 
-Future external datasets will require explicit review of source, license, attribution, CRS, resolution, redistribution rights, and known limitations.
+LAB 04 uses a synthetic ten-element geochemical subcomposition with explicit units, detection-limit semantics, missing-value semantics, and compositional assumptions documented in a machine-readable data contract.
+
+Synthetic detection limits and concentration values are methodological assumptions and must not be interpreted as certified assay values or as empirical properties of a real mineral deposit.
+
+Future external datasets will require explicit review of source, license, attribution, CRS, measurement units, analytical methods, detection limits, resolution, redistribution rights, and known limitations.
 
 ## Current roadmap
 
@@ -331,7 +455,7 @@ Future external datasets will require explicit review of source, license, attrib
 | LAB 01 | Geospatial Python Foundations | Complete |
 | LAB 02 | Spatial Exploratory Data Analysis | Complete |
 | LAB 03 | Spatial Cross-Validation | Complete |
-| LAB 04 | Geochemical CoDA | Planned |
+| LAB 04 | Geochemical CoDA | Complete |
 | LAB 05 | Mineral Prospectivity Mapping | Planned |
 | LAB 06 | Explainable GeoAI | Planned |
 | LAB 07 | Uncertainty Quantification | Planned |
@@ -339,18 +463,23 @@ Future external datasets will require explicit review of source, license, attrib
 | LAB 09 | Deep Learning for GeoAI | Planned |
 | LAB 10 | Graph & Multimodal GeoAI | Planned |
 
-LAB 01, LAB 02, and LAB 03 are completed and validated.
+LAB 01 through LAB 04 are completed and validated.
 
-LAB 03 extends the portfolio from exploratory spatial reasoning into spatial cross-validation, with explicit attention to spatial leakage, train-validation separation, spatial-group overlap, and the limitations of conventional random cross-validation.
+LAB 03 establishes that validation geometry can materially change estimated predictive performance when observations are spatially structured.
 
-LAB 04 will move into geochemical compositional data analysis while preserving the same emphasis on reproducibility, explicit assumptions, and spatially appropriate validation.
+LAB 04 adds the compositional-data foundation needed to represent multivariate geochemistry without treating a constrained subcomposition as ordinary unconstrained Euclidean data.
+
+LAB 05 will combine these foundations in a controlled mineral prospectivity mapping experiment, with particular attention to spatial validation, leakage control, baseline comparison, and interpretable geoscientific features.
 
 ## Technical principles
 
 - Reproducibility before complexity
 - Spatially correct feature engineering
 - Explicit CRS and units
+- Explicit data contracts and analytical assumptions
+- Appropriate treatment of compositional information
 - Independent validation where appropriate
+- Leakage-aware predictive modelling
 - Simple evidence before advanced modelling
 - Automated tests for reusable code
 - Clear assumptions and limitations
@@ -360,7 +489,7 @@ LAB 04 will move into geochemical compositional data analysis while preserving t
 
 This repository is intended as a curated technical portfolio rather than a production mineral exploration platform.
 
-Later releases will progressively demonstrate capabilities in spatial EDA, spatial validation, geochemistry, mineral prospectivity modelling, explainability, uncertainty, remote sensing, deep learning, and advanced GeoAI.
+Later releases will progressively demonstrate capabilities in mineral prospectivity modelling, explainability, uncertainty quantification, remote sensing, deep learning, graph methods, and multimodal GeoAI.
 
 The emphasis throughout the portfolio is:
 
